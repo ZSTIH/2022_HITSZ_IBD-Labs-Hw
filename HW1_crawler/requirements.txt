@@ -1,4 +1,5 @@
 beautifulsoup4==4.11.1
 jieba==0.42.1
+lxml==4.9.1
 requests==2.25.1
 zhon==1.1.5

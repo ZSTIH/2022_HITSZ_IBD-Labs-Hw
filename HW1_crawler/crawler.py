@@ -1,9 +1,10 @@
 import re
+from string import punctuation as en_punctuation
+
 import jieba
 import requests
 from bs4 import BeautifulSoup
 from zhon.hanzi import punctuation as chi_punctuation
-from string import punctuation as en_punctuation
 
 
 class MyCrawler:
@@ -44,9 +45,10 @@ class MyCrawler:
                 element = unvisited_url_list.pop(0)
                 time_out = self.TIME_OUT_SHORT
             else:
-                print(
-                    "The crawler stops working because there are no more accessible web pages! %d web pages have been "
-                    "crawled." % num)
+                print("\033[0;31m%s\033[0m" %
+                      ("The crawler stops working because there are no more accessible web pages! %d web pages have "
+                       "been "
+                       "crawled." % num))
                 break
             if element in visited_url_list:
                 continue
@@ -68,14 +70,16 @@ class MyCrawler:
 
                 if num == self.total_number:
                     file_out.close()
-                    print(
-                        "The crawler stops working because the target number has been reached! %d web pages have been "
-                        "crawled." % num)
+                    print("\033[0;31m%s\033[0m" %
+                          ("The crawler stops working because the target number has been reached! %d web pages have "
+                           "been "
+                           "crawled." % num))
                     break
                 elif num > 0 and num % 10 == 0:
                     file_out.close()
-                    print("The crawler is now working... %d web pages have been crawled!" % num)
+                    print(
+                        "\033[0;31m%s\033[0m" % ("The crawler is now working... %d web pages have been crawled!" % num))
 
             except Exception as e:
-                print("\033[0;31m%s\033[0m" % "Exception!")
-                print("\033[0;31m%s\033[0m" % e)
+                print("Exception!")
+                print(e)
