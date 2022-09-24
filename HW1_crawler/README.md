@@ -23,6 +23,7 @@
 - README.md：本文档
 - crawler.py：实现爬虫功能的Python模块
 - main.py：对crawler.py进行调用
+- preprocess.py：对result.txt进行预处理
 - requirements.txt：工程依赖包清单
 - result.txt：进行分词后的爬取结果（main.py执行时自动生成）
 - seed_url.txt：存放种子网页地址（选取了清华、北大、复旦等高校的官方网站）
