@@ -2,4 +2,8 @@ test_adult.csv
 
 train_adult.csv
 
+test_adult_processed.csv
+
+train_adult_processed.csv
+
 cart.npy
