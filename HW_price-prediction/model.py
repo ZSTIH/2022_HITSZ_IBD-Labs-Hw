@@ -1,10 +1,11 @@
 # -*- coding: UTF-8 -*-
 # 为方便测试，请统一使用 numpy、pandas、sklearn 三种包，如果实在有特殊需求，请单独跟助教沟通
+import argparse
+
 import numpy as np
 import pandas as pd
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_absolute_error, mean_squared_error
-import argparse
 
 # 设定随机数种子，保证代码结果可复现
 np.random.seed(1024)
@@ -17,12 +18,13 @@ class Model:
         2. 需要有self.X_train、self.y_train、self.X_test三个实例变量，请注意大小写
         3. 如果划分出验证集，请将实例变量命名为self.X_valid、self.y_valid
     """
+
     # 模型初始化，数据预处理，仅为示例
     def __init__(self, train_path, test_path):
         df_train = pd.read_csv(train_path, encoding='utf-8')
         df_test = pd.read_csv(test_path, encoding='utf-8')
         self.y_train = df_train['出售价格'].values
-        
+
         # 简单处理
         self.X_train = pd.concat([df_train['街区'], df_train['地段'], df_train['修建年份']], axis=1)
         self.X_test = pd.concat([df_test['街区'], df_test['地段'], df_test['修建年份']], axis=1)
