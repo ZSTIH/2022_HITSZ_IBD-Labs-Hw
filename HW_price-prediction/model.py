@@ -7,9 +7,8 @@ import time
 import numpy as np
 import pandas as pd
 from sklearn.metrics import mean_absolute_error, mean_squared_error
-from sklearn.tree import DecisionTreeRegressor
-from sklearn.ensemble import RandomForestRegressor
 from sklearn.ensemble import ExtraTreesRegressor
+from sklearn.ensemble import GradientBoostingRegressor
 
 # 设定随机数种子，保证代码结果可复现
 np.random.seed(1024)
@@ -37,36 +36,38 @@ class Model:
         self.data_path = "total_data_processed.csv"
         self.X_train = None
         self.X_test = None
-        self.preprocess(df_train, df_test)
-
-        # 初始化模型
         self.df_predict = pd.DataFrame(index=df_test.index)
 
-        self.predict_model = DecisionTreeRegressor()
-        # self.predict_model = RandomForestRegressor(n_estimators=100, n_jobs=-1)
-        # self.predict_model = ExtraTreesRegressor(n_estimators=500, bootstrap=True, n_jobs=-1)
+        # 初始化模型
+        self.predict_model = GradientBoostingRegressor(n_estimators=500)
+        # 初始化对缺失(异常)数据进行预测的模型
+        self.data_predict_model = ExtraTreesRegressor(n_estimators=500, bootstrap=True, n_jobs=-1)
+        self.preprocess(df_train, df_test)
 
     # 模型训练，输出训练集平均绝对误差和均方误差
     def train(self):
         self.predict_model.fit(self.X_train, self.y_train)
         y_train_pred = self.predict_model.predict(self.X_train)
-        y_train_pred = [max(0, num) for num in y_train_pred]
+        y_train_pred = [max(0, num) for num in y_train_pred]  # 将小于0的结果置0
         return mean_absolute_error(self.y_train, y_train_pred), mean_squared_error(self.y_train, y_train_pred)
 
     # 模型测试，输出测试集预测结果
     def predict(self):
         y_test_pred = self.predict_model.predict(self.X_test)
-        y_test_pred = [max(0, num) for num in y_test_pred]
+        y_test_pred = [max(0, num) for num in y_test_pred]  # 将小于0的结果置0
         self.df_predict['出售价格'] = y_test_pred
         return self.df_predict
 
     # 数据预处理
     def preprocess(self, df_train, df_test):
         train_size = df_train.shape[0]
+        # 由于数据预处理时间过久，因此将上一次数据预处理的结果存起来便于下一次加载使用
+        # 检测到目录下有经过预处理的数据时，直接加载，不必重复进行数据预处理步骤
         if os.path.exists(self.data_path):
             total_data = pd.read_csv(self.data_path)
         else:
             total_data = pd.concat([df_train, df_test], ignore_index=True)
+            # 属性“地役权”在全体样本中都缺失了，因此可以直接删去
             total_data = total_data.drop(labels=['地役权'], axis=1)
 
             # 处理类别型属性(直接编号)
@@ -81,32 +82,37 @@ class Model:
                     total_data_index += 1
                 print("类别型属性[%s]被处理完毕" % feature)
             print("全部类别型属性都已被处理完毕！")
-            # 处理数值型属性(填充为平均数)
+            # 处理数值型属性(用类别型属性和正常值进行预测)
             print("正在处理数值型属性...")
             for feature in self.numeric_columns:
                 if feature != '出售日期':
-                    valid_list = []
-                    for value in total_data[feature]:
-                        if value != ' -  ' and value != '0':
-                            valid_list.append(int(value))
-                    mean = np.mean(valid_list)
+                    # 获得数值型属性没有异常的项
+                    numeric_valid = total_data.loc[
+                        (total_data[feature] != '0') & (total_data[feature] != ' -  ')]
+                    numeric_valid_X = numeric_valid[self.category_columns]
+                    numeric_valid_y = numeric_valid[feature]
+                    self.data_predict_model.fit(numeric_valid_X, numeric_valid_y)
                     total_data_index = 0
                     for value in total_data[feature]:
                         if value == ' -  ' or value == '0':
-                            total_data.loc[total_data_index, feature] = int(mean)
+                            numeric_abnormal = total_data.iloc[total_data_index, :]
+                            numeric_abnormal = np.array([numeric_abnormal[self.category_columns]])
+                            predict_res = self.data_predict_model.predict(numeric_abnormal)
+                            # 使用预测值来填充数值型属性的缺失(异常)值
+                            total_data.loc[total_data_index, feature] = int(predict_res[0])
                         total_data_index += 1
                 else:
                     total_data_index = 0
                     for value in total_data[feature]:
                         time_array = time.strptime(value, "%Y-%m-%d %H:%M:%S")
                         timestamp = time.mktime(time_array)
+                        # 将出售日期对应的字符串转换为对应时间戳
                         total_data.loc[total_data_index, feature] = int(timestamp)
                         total_data_index += 1
                 print("数值型属性[%s]被处理完毕" % feature)
             # 将处理后的数据存入csv
             total_data.to_csv(self.data_path, index=False, encoding='utf-8-sig')
             print("数据处理完毕且已经被存入文件%s中！" % self.data_path)
-        # total_data = total_data.drop(labels=['土地平方英尺', '总平方英尺', '修建年份', '出售日期'], axis=1)
         self.X_train = total_data.iloc[:train_size, :]
         self.X_test = total_data.iloc[train_size:, :]
 
