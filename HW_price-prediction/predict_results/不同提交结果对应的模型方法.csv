@@ -1,0 +1,31 @@
+﻿提交序号,数值型属性缺失（异常）值处理方式,所使用的回归预测模型,模型建立方法
+1,填充平均值,决策树,DecisionTreeRegressor()
+2,填充平均值,决策树+提前剪枝,DecisionTreeRegressor(max_depth=20)
+3,填充平均值,决策树+提前剪枝,DecisionTreeRegressor(max_depth=30)
+4,填充平均值,随机森林,RandomForestRegressor(n_estimators=100)
+5,填充平均值,随机森林,RandomForestRegressor(n_estimators=500)
+6,填充平均值,随机森林,RandomForestRegressor(n_estimators=600)
+7,填充平均值,极端随机树,"ExtraTreesRegressor(n_estimators=100, n_jobs=-1)"
+8,填充平均值,极端随机树,"ExtraTreesRegressor(n_estimators=500, n_jaobs=-1)"
+9,填充平均值,极端随机树,"ExtraTreesRegressor(n_estimators=500, bootstrap=True, n_jobs=-1)"
+10,去除所有数值型属性，只留下类别型,决策树,DecisionTreeRegressor()
+11,填充平均值,极端随机树,"ExtraTreesRegressor(n_estimators=300, bootstrap=True, n_jobs=-1)"
+12,填充平均值,极端随机树,"ExtraTreesRegressor(n_estimators=600, bootstrap=True, n_jobs=-1)"
+13,填充平均值,极端随机树,"ExtraTreesRegressor(n_estimators=800, bootstrap=True, n_jobs=-1)"
+14,填充平均值,极端随机树,"ExtraTreesRegressor(n_estimators=500, bootstrap=True, n_jobs=-1, max_depth=30)"
+15,填充平均值,极端随机树,"ExtraTreesRegressor(n_estimators=400, bootstrap=True, n_jobs=-1)"
+16,填充平均值,极端随机树,"ExtraTreesRegressor(n_estimators=700, bootstrap=True, n_jobs=-1)"
+17,预测缺失（异常）值,极端随机树,"ExtraTreesRegressor(n_estimators=500, bootstrap=True, n_jobs=-1)"
+18,预测缺失（异常）值,极端随机树,"ExtraTreesRegressor(n_estimators=500, bootstrap=True, n_jobs=-1, max_depth=30)"
+19,预测缺失（异常）值,极端随机树,"ExtraTreesRegressor(n_estimators=600, bootstrap=True, n_jobs=-1)"
+20,预测缺失（异常）值,极端随机树,"ExtraTreesRegressor(n_estimators=700, bootstrap=True, n_jobs=-1)"
+21,预测缺失（异常）值,梯度提升机,GradientBoostingRegressor(n_estimators=500)
+22,填充平均值,梯度提升机,GradientBoostingRegressor(n_estimators=500)
+23,填充平均值,梯度提升机,GradientBoostingRegressor(n_estimators=400)
+24,填充平均值,梯度提升机,GradientBoostingRegressor(n_estimators=600)
+25,填充平均值,梯度提升机,GradientBoostingRegressor(n_estimators=700)
+26,填充平均值,梯度提升机,GradientBoostingRegressor(n_estimators=800)
+27,预测缺失（异常）值,梯度提升机,GradientBoostingRegressor(n_estimators=400)
+28,预测缺失（异常）值,梯度提升机,GradientBoostingRegressor(n_estimators=600)
+29,预测缺失（异常）值,梯度提升机,GradientBoostingRegressor(n_estimators=700)
+30,预测缺失（异常）值,梯度提升机,GradientBoostingRegressor(n_estimators=550)
